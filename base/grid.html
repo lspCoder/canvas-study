@@ -1,0 +1,70 @@
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>canvas坐标系统</title>
+</head>
+<body>
+	<canvas id="mycanvas" width="500" height="500">您的浏览器不支持canvas</canvas>
+	<script type="text/javascript">
+		window.onload = function () {
+			canvasApp();
+		}
+
+		function isSupportCanvas(canvas){
+			return !!canvas.getContext;
+		}
+
+		var canvas;
+		function canvasApp(){
+			canvas = document.getElementById('mycanvas');
+			if(!isSupportCanvas(canvas)) return;
+
+			var ctx = canvas.getContext('2d');
+
+			drawScreen(ctx);
+		}
+
+		function drawScreen(ctx){
+			var dx = 50;
+			var dy = 50;
+
+			var x=0;
+			var y=0;
+			var w = canvas.width;
+			var h = canvas.height;
+
+			var xy = 10;
+
+			ctx.lineWidth = 1;
+
+			while (y < h) {
+				y = y + dy;
+
+				ctx.moveTo(x, y);
+				ctx.lineTo(w, y);
+				ctx.stroke();
+
+				ctx.font = '15px Calibri';
+				ctx.fillText(xy, x, y);
+
+				xy += 10;
+			}
+
+			// 画竖线 
+			y =0; 
+			xy =10; 
+			while (x < w) { 
+				x = x + dx; 
+				ctx.moveTo(x, y); 
+				ctx.lineTo(x,h); 
+				ctx.stroke(); 
+				//纵坐标的数字 
+				ctx.font = "15px Calibri"; 
+				ctx.fillText(xy,x,10); 
+				xy+=10; 
+			}
+		}
+
+	</script>
+</body>
+</html>

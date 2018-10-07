@@ -1,0 +1,24 @@
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>绘制文字</title>
+</head>
+<body>
+	<canvas id="canvas" width="500px" height="500px">
+	浏览器不支持canvas
+	</canvas>
+
+	<script>
+		var canvas = document.getElementById('canvas');
+		var ctx = canvas.getContext('2d');
+
+		ctx.font = "48px serif";
+  		ctx.fillText("Hello world", 10, 50);
+		
+		ctx.strokeText("Hello world", 10, 150);
+
+		var text = ctx.measureText('foo');
+		console.log(text.width);
+	</script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>三角函数</title>
+</head>
+<body>
+	<canvas id="canvas" width="500px" height="500px">
+	浏览器不支持canvas
+	</canvas>
+
+	<script>
+
+	//正弦曲线: y = A sin(Bx + C) + D
+
+		var canvas = document.getElementById('canvas');
+		var ctx = canvas.getContext('2d');
+
+		var canvasWidth = canvas.width;
+		var canvasHeight = canvas.height;
+		var speed=1;
+
+		var startX = 0;
+		var waveWidth = 0.05; // 波浪宽度,数越小越宽
+		var waveHeight = 30; // 波浪高度,数越大越高
+		var xOffset = 0; // 水平位移
+
+		
+		function drawSin() {
+			ctx.beginPath();
+			for (let x = startX; x < startX + canvasWidth; x += 20 / canvasWidth) {
+			    var y = waveHeight * Math.sin((startX + x) * waveWidth + xOffset);
+			    ctx.lineTo(x, (canvasHeight / 2) + y);
+			}
+			ctx.stroke();
+		}
+
+		function draw() {
+			ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+			this.drawSin();
+			xOffset+=0.1;
+
+			requestAnimationFrame(draw);
+		}
+
+		draw();
+	</script>
+</body>
+</html>

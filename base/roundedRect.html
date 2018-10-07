@@ -1,0 +1,33 @@
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>圆角矩形</title>
+</head>
+<body>
+	<canvas id="canvas" width="500px" height="500px">
+	浏览器不支持canvas
+	</canvas>
+
+	<script>
+		var canvas = document.getElementById('canvas');
+		var ctx = canvas.getContext('2d');
+
+		// 封装的一个用于绘制圆角矩形的函数.
+		function roundedRect(ctx,x,y,width,height,radius){
+		  ctx.beginPath();
+		  ctx.moveTo(x,y+radius);
+		  ctx.lineTo(x,y+height-radius);
+		  ctx.quadraticCurveTo(x,y+height,x+radius,y+height);
+		  ctx.lineTo(x+width-radius,y+height);
+		  ctx.quadraticCurveTo(x+width,y+height,x+width,y+height-radius);
+		  ctx.lineTo(x+width,y+radius);
+		  ctx.quadraticCurveTo(x+width,y,x+width-radius,y);
+		  ctx.lineTo(x+radius,y);
+		  ctx.quadraticCurveTo(x,y,x,y+radius);
+		  ctx.stroke();
+		}
+
+		roundedRect(ctx, 50, 50, 100, 100, 10);
+	</script>
+</body>
+</html>

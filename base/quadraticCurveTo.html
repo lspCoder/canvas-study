@@ -1,0 +1,27 @@
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>绘制矩形</title>
+</head>
+<body>
+	<canvas id="canvas" width="500px" height="500px">
+	浏览器不支持canvas
+	</canvas>
+
+	<script>
+		var canvas = document.getElementById('canvas');
+		var ctx = canvas.getContext('2d');
+
+		// 二次贝塞尔曲线绘制气泡对话框
+		 ctx.beginPath();
+		 ctx.moveTo(75,25);
+		 ctx.quadraticCurveTo(25,25,25,62.5);
+		 ctx.quadraticCurveTo(25,100,50,100);
+		 ctx.quadraticCurveTo(50,120,30,125);
+		 ctx.quadraticCurveTo(60,120,65,100);
+		 ctx.quadraticCurveTo(125,100,125,62.5);
+		 ctx.quadraticCurveTo(125,25,75,25);
+		 ctx.stroke();
+	</script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Path2D对象</title>
+</head>
+<body>
+	<canvas id="canvas" width="500px" height="500px">
+	浏览器不支持canvas
+	</canvas>
+
+	<script>
+		var canvas = document.getElementById('canvas');
+		var ctx = canvas.getContext('2d');
+
+		var rectAngle = new Path2D();
+		rectAngle.rect(10,10,50, 50);
+
+		var circle = new Path2D();
+
+		circle.moveTo(125, 50);
+		circle.arc(100, 35, 25, 0, 2 * Math.PI);
+
+		var p = new Path2D("M100 100 h 80 v 80 h -80 Z");
+
+		ctx.stroke(p);
+
+		ctx.stroke(rectAngle);
+		ctx.fill(circle);
+	</script>
+</body>
+</html>

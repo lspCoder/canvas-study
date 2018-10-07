@@ -1,0 +1,39 @@
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>绘制矩形</title>
+</head>
+<body>
+	<canvas id="canvas">
+	浏览器不支持canvas
+	</canvas>
+
+	<script>
+		var canvas = document.getElementById('canvas');
+		var ctx = canvas.getContext('2d');
+
+		ctx.fillRect(25, 25, 100, 100);
+	    ctx.clearRect(45, 45, 60, 60);
+	    ctx.strokeRect(50, 50, 50, 50);
+
+	    // ctx.rect(50, 50, 50, 50);
+	    // ctx.stroke();
+	    
+	    // 填充三角形
+		 // ctx.beginPath();
+		 // ctx.moveTo(25,25);
+		 // ctx.lineTo(105,25);
+		 // ctx.lineTo(25,105);
+		 // ctx.fill();
+
+		 // // 描边三角形
+		 // ctx.beginPath();
+		 // ctx.moveTo(125,125);
+		 // ctx.lineTo(125,45);
+		 // ctx.lineTo(45,125);
+		 // ctx.closePath();
+		 // ctx.stroke();
+
+	</script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+</head>
+<body>
+	<canvas id="canvas" width="500px" height="500px">
+	浏览器不支持canvas
+	</canvas>
+	<script>
+		var canvas = document.getElementById('canvas');
+		var ctx = canvas.getContext('2d');
+
+
+		// function extend (Child, Parent) {
+		//     var F = function(){};
+		//     F.prototype = Parent.prototype;
+		//     Child.prototype = new F();
+		//     Child.prototype.constructor = Child;
+		//     Child.superClass = Parent.prototype;
+		// }
+
+		function extend(clazz, baseClazz) {
+		    var clazzPrototype = clazz.prototype;
+		    function F() {}
+		    F.prototype = baseClazz.prototype;
+		    clazz.prototype = new F();
+
+		    for (var prop in clazzPrototype) {
+		        clazz.prototype[prop] = clazzPrototype[prop];
+		    }
+		    clazz.prototype.constructor = clazz;
+		    clazz.superClass = baseClazz;
+		}
+
+		function Path(opt) {
+			this.points = opt.points;
+			this.lineWidth = opt.lineWidth || 1;
+			this.strokeStyle = opt.strokeStyle || '';
+			this.closed = opt.closed;
+			this.isFill = opt.isFill;
+			this.fillStyle = this.isFill ? opt.fillStyle : '';
+		}
+
+		Path.prototype = {
+			constructor: Path,
+
+			getPoints: function () {
+				return this.points;
+			},
+
+			createPath: function() {
+				var points = this.getPoints();
+				points.forEach(function(point, i){
+					ctx[i==0?'moveTo':'lineTo'](point.x, point.y);
+				})
+				if (this.closed) {
+					ctx.lineTo(this.points[0].x, this.points[0].y);
+				}
+			},
+
+			draw: function () {
+				ctx.save();
+				ctx.lineWidth = this.lineWidth;
+				ctx.strokeStyle = this.strokeStyle;
+				ctx.beginPath();
+				this.createPath();
+				ctx.closePath();
+				ctx.stroke();
+				if (this.isFill) ctx.fill();
+				ctx.restore();
+			}
+		}
+
+		function Arc (opt) {
+			this.x = opt.x;
+			this.y = opt.y;
+			this.radius = opt.radius;
+			this.startAngle = opt.startAngle || 0;
+			this.endAngle = opt.startAngle || Math.PI * 2;
+			this.clockwise = opt.clockwise;
+			Path.call(this, opt);
+		}
+
+		Arc.prototype = {
+			constructor: Arc,
+
+			createPath: function () {
+				ctx.arc(this.x, this.y, this.radius, this.startAngle, this.endAngle, this.clockwise);
+			}
+		}
+
+		extend(Arc, Path);
+
+		function Rect (opt) {
+			this.x = opt.x;
+			this.y = opt.y;
+			this.width = opt.width || 5;
+			this.height = opt.height || 5;
+			Path.call(this, opt);
+		}
+
+		Rect.prototype = {
+			constructor: Rect,
+
+			getPoints: function () {
+				var p1 = {x: this.x, y: this.y};
+				var p2 = {x: this.x + this.width, y: this.y};
+				var p3 = {x: this.x + this.width, y: this.y + this.height};
+				var p4 = {x: this.x, y: this.y + this.height};
+				this.points = [p1, p2, p3, p4];
+				return this.points;
+			},
+
+		}
+
+		extend(Rect, Path);
+
+		var path1 = new Path({
+			points: [{x: 10, y: 10}, {x: 100,y: 10}, {x: 100, y: 150}, {x: 10, y: 150}],
+			lineWidth: 1,
+			strokeStyle: '#F00',
+			closed: false
+		});
+		path1.draw();
+
+		var circle = new Arc({
+			x: 350,
+			y: 50, 
+			radius: 30,
+			strokeStyle: '#CCC'
+		});
+		circle.draw();
+
+		var rect = new Rect({
+			x: 300,
+			y: 300, 
+			width: 100,
+			height: 100
+		})
+		rect.draw();
+		
+	</script>
+</body>
+</html>

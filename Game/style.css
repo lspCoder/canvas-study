@@ -1,0 +1,47 @@
+* {margin: 0;padding: 0}
+
+.panel {
+    margin: 0 auto;
+    text-align: center;
+}
+
+.desc {
+    display: inline-block;
+    width: 320px;
+    background-color: #fc0;
+    margin-right: 10px;
+    vertical-align: top;
+    height: 100%;
+}
+
+.title {
+    text-align: center;
+    color: #FFF;
+}
+
+.result {
+    margin-top: 50px;
+    text-align: center;
+}
+
+#btn {
+    text-align: center;
+    margin-top: 150px;
+}
+
+#start {
+    display: inline-block;
+    border-color: #357ebd;
+    background-color: #428bca;
+    color: #FFF;
+    width: 50%;
+    font-size: 18px;
+    border-radius: 6px;
+    padding: 10px;
+    border-style: none;
+    cursor: pointer;
+}
+
+canvas {
+    box-shadow: 3px 3px 3px 3px #cccccc;
+}

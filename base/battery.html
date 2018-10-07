@@ -1,0 +1,51 @@
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>电池充电动画</title>
+</head>
+<body>
+	<canvas id="canvas" width="500px" height="500px">
+	浏览器不支持canvas
+	</canvas>
+
+	<script>
+		var canvas = document.getElementById('canvas');
+		var ctx = canvas.getContext('2d');
+		var i=0, speed = .4;
+
+		drawBody(ctx);
+		drawHead(ctx);
+		drawPower(ctx);
+
+		function drawBody(ctx) {
+			ctx.save();
+			ctx.lineWidth = 10;
+			ctx.strokeStyle = '#6495ED';
+			ctx.strokeRect(100, 100, 200, 80);
+			ctx.restore();
+		}
+
+		function drawHead(ctx){
+			ctx.save();
+			ctx.fillStyle = '#6495ED';
+			ctx.fillRect(300, 115, 25, 50);
+			ctx.restore();
+		}
+
+		function drawPower() {
+			if (i > 90) {
+				ctx.clearRect(110, 110, 180, 60);
+				i=0;
+			}
+			if (!(Math.floor(i) % 20)){
+				ctx.save();
+				ctx.fillStyle = '#4EEE94';
+				ctx.fillRect(112 + i /20 * 36, 112, 32, 56);
+				ctx.restore();
+			}
+			i+=speed;
+			requestAnimationFrame(drawPower);
+		}
+	</script>
+</body>
+</html>
