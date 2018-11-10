@@ -1,28 +1,33 @@
-## canvas手写辨色力小游戏
+## canvas基础
 
-#### 前言
-
-​	前段时间看到掘金上有个es6手写辨色了游戏，觉得很有意思，作者使用dom操作实现的游戏逻辑，感觉可以用canvas实现，效率更高，于是闲着没事，手写了一个canvas版的辨色小游戏，具体效果如下：
-
-![](https://i.loli.net/2018/10/07/5bb9d08852610.gif)
-
-界面写得丑，忘轻喷。。。
-
-#### 绘制游戏格子
-
-首先我们需要准备一张画布，
+##### 1.canvas标签元素
 
 ```javascript
 var canvas = document.getElementById('canvas');
-    if (!canvas.getContext('2d')) {
-        alert('你的浏览器不支持canvas，请换个浏览器试试');
-    }
-    var ctx = canvas.getContext('2d');
+canvas默认width为300，height为150
+var ctx = canvas.getContext('2d');       //2d渲染上下文对象CanvasRenderingContext2D
+通过canvas.style改变画布的宽高会拉伸图形，扭曲画布
+
+//检查支持性
+if (canvas.getContext){
+  var ctx = canvas.getContext('2d');
+  // drawing code here
+} else {
+  // canvas-unsupported code here
+}
 ```
 
-然后我会定义一个Rect的方块类，这个方块需要具备位置，宽高，填充颜色几个属性，根据canvas绘制矩形的api，我们可以用以下api绘制矩形
+##### 2.画布栅格
 
-```
+![](https://i.loli.net/2018/09/11/5b97ab0920450.png)
+
+canvas中栅格每一个单元都是一个像素
+
+栅格的起点在左上角，坐标（0，0）
+
+##### 3.绘制矩形
+
+```javascript
 fillRect(x, y, width, height)        //填充矩形
 strokeRect(x, y, width, height)       //矩形描边
 clearRect(x, y, width, height)       //清除画布，清除部分完全透明
@@ -30,222 +35,92 @@ clearRect(x, y, width, height)       //清除画布，清除部分完全透明
 rect(x, y, width, height)           //矩形路径，需要配和fill和stroke
 ```
 
-但是为了后面事件监听更方便，我们这里不使用fillRect方法，我们使用绘制线段的方法moveTo和lineTo来绘制，
+##### 4.绘制路径
 
-首先通过Rect具有一个绘制路径的函数：
-
-```javascript
-	getPoints: function () {
-            var p1 = { x: this.x, y: this.y };
-            var p2 = { x: this.x + this.width, y: this.y };
-            var p3 = { x: this.x + this.width, y: this.y + this.height };
-            var p4 = { x: this.x, y: this.y + this.height };
-            this.points = [p1, p2, p3, p4];
-            return this.points;
-        },
-
-        createPath: function () {
-            var points = this.getPoints();
-            points.forEach(function (point, i) {
-                ctx[i == 0 ? 'moveTo' : 'lineTo'](point.x, point.y);
-            })
-            if (this.closed) {
-                ctx.lineTo(this.points[0].x, this.points[0].y);
-            }
-        },
+```
+beginPath()     //新建一条路径，生成之后，图形绘制命令被指向到路径上生成路径。
+closePath()        //闭合路径之后图形绘制命令又重新指向到上下文中。fill方法默认闭合，
+stroke()        //通过线条来绘制图形轮廓。
+fill()       //通过填充路径的内容区域生成实心的图形
+moveTo(x, y)       //移动画笔到指定点
+lineTo(x, y)         //当前点到指定点的直线
 ```
 
-首先通过位置和宽高构造四个点，然后在通过moveTo和lineTo构造路径，路径构造好后我们需要绘制到画布上，因此还需要一个draw函数绘制：
+路径的本质是由很多个子路径组成，每次beginPath就像重新new了一个数组，清空以前的子路径，绘制新路径
+
+##### 5.绘制圆弧
 
 ```javascript
-	draw: function () {
-            ctx.save();
-            ctx.fillStyle = this.fillStyle;
-            ctx.beginPath();
-            this.createPath();
-            ctx.closePath();
-            ctx.stroke();
-            ctx.fill();
-            ctx.restore();
-        },
+ctx.arc(x, y, radius, startAngle, endAngle, anticlockwise);    //x,y圆心坐标，半径，开始弧度，结束弧度，anticlockwise为false顺时针反之逆时针
+角度与弧度的计算公式：弧度=(Math.PI/180)*角度
 ```
 
-方块类定义好后，我们开始定义颜色函数，颜色逻辑 [参考这篇文章](https://juejin.im/post/5ba0da47e51d450e6a2e0548)；
+##### 6.贝塞尔曲线
 
 ```javascript
-/**
-     * 根据关卡等级返回相应的一般颜色和特殊颜色
-     * @param {number} step 关卡级别
-     */
-    function getColor(step) {
-        // rgb 随机加减 random
-        let random = Math.floor(100 / step);
-
-        // 获取随机一般颜色，拆分三色值
-        let color = randomColor(17, 255),
-            m = color.match(/[\da-z]{2}/g);
-
-        // 转化为 10 进制
-        for (let i = 0; i < m.length; i++) m[i] = parseInt(m[i], 16); //rgb
-        let specialColor =
-            getRandomColorNumber(m[0], random) +
-            getRandomColorNumber(m[1], random) +
-            getRandomColorNumber(m[2], random);
-        return ['#' + color, '#' + specialColor];
-    }
-
-    /**
-     * 获取随机颜色相近的 rgb 三色值
-     * @param {number} num 单色值
-     * @param {number} random 随机加减的数值
-     */
-    function getRandomColorNumber(num, random) {
-        let temp = Math.floor(num + (Math.random() < 0.5 ? -1 : 1) * random);
-        if (temp > 255) {
-            return "ff";
-        } else if (temp > 16) {
-            return temp.toString(16);
-        } else if (temp > 0) {
-            return "0" + temp.toString(16);
-        } else {
-            return "00";
-        }
-    }
-	/**
-     * 随机颜色
-     * @param {number} min 最小值
-     * @param {number} max 最大值
-     */
-    function randomColor(min, max) {
-        var r = randomNum(min, max).toString(16);
-        var g = randomNum(min, max).toString(16);
-        var b = randomNum(min, max).toString(16);
-        return r + g + b;
-    }
+quadraticCurveTo(cp1x, cp1y, x, y) //cp1x,cp2y为控制点，x和y为结束点
+bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)  //cp1x, cp1y, cp2x, cp2y两个控制点
 ```
 
-具体逻辑参考代码，
+![](https://i.loli.net/2018/09/11/5b97c13c030dd.png)
 
-然后我们开始new小方块，并且绘制到画布上，
+![](https://i.loli.net/2018/09/11/5b97c04e17bc8.gif)
 
-```javascript
-var blockWidth = ((500 / col).toFixed(2) * 500 - 1) / 500;
-var randomCol = Math.floor(col * Math.random());
-var randomCell = Math.floor(col * Math.random());
+![](https://i.loli.net/2018/09/11/5b97c1509786c.png)
 
-var colorObj = getColor(step);
+![](https://i.loli.net/2018/09/11/5b97c04bcf4c5.gif)
 
-for (var i = 0; i < col ; i++) {
-    for (var j = 0; j < col; j++) {
-        var rect = new Rect({
-            x: (blockWidth + 5) * i + (canvas.width - blockWidth * col - (col - 1) * 5) / 2,
-            y: (blockWidth + 5) * j + (canvas.width - blockWidth * col - (col - 1) * 5) / 2,
-            width: blockWidth,
-            height: blockWidth,
-            fillStyle: colorObj[0]
-        });
+> 参考大漠老师的文档:https://www.w3cplus.com/canvas/drawing-curve.html
 
-        if (i == randomCol && j == randomCell) {
-            rect.updateStyle(colorObj[1]);
-        }
+##### 7.Path2D 对象
 
-        rect.draw();
-        datas.push(rect);
-    }
-}
+```js
+new Path2D();     // 空的Path对象
+new Path2D(path); // 克隆Path对象
+new Path2D(svg);    // 从SVG建立Path对象
+ctx.fill(path2D);
+ctx.stroke(path2D);     //路径对象创建后需要使用fill和stroke绘制到画布上；
+
+new Path2D("M10 10 h 80 v 80 h -80 Z");    //先移动到点 (M10 10) 然后再水平移动80个单位(h 80)，然后下移80个单位 (v 80)，接着左移80个单位 (h -80)，再回到起点处 (z)
 ```
 
-这样我们基本就完成了游戏的大概了。
+##### 8.canvas样式
 
-![](https://i.loli.net/2018/10/07/5bb9d89c01250.png)
+```js
+ctx.fillStyle = color         //颜色值接受属于css3规范的颜色值
+ctx.strokeStyle = color
+ctx.globalAlpha = transparencyValue         //0为完全透明，1为完全不透明
+ctx.lineWidth = 1.0      //画笔线宽
+ctx.lineCap = butt //round, square
+ctx.lineJoin = miter //round,bevel
+ctx.setLineDash([线长, 间距])     //数组长度为1代表线长和间距相等的虚线
+ctx.lineDashOffset = Number    //设置虚线的其实偏移量,配合动画可以绘制流动的虚线效果
+var gradient = ctx.createLinearGradient(x1, y1, x2, y2)       //渐变起点和渐变终点，线性渐变
+var gradient =ctx.createRadialGradient(x1, y1, r1, x2, y2, r2)    //径向渐变
+gradient.addColorStop(position, color)        //position为0~1,第二个是个css颜色值
+ctx.createPattern(image, type)       //需要先加载Image对象，type:repeat,repeat-x,repeat-y和no-repeat
+ctx.shadowOffsetX = 2;
+ctx.shadowOffsetY = 2;
+ctx.shadowBlur = 2;
+ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
 
-#### 添加事件
-
-小方块已经绘制好了，那么接下来我们来是实现游戏的关键点，那就是交互，我们如何过去到鼠标点击的小方块呢，这个小方块只是canvas画布上的一张图，并不能直接像dom一样添加事件监听，这或许就是这个游戏有意思的地方，那么canvas上有没有什么方法能让我们知道我们具体点击的是哪个小方块呢？搜搜MDN，果然有一个方法可以判断点是否在路径上isPointInPath()；
-
-```javascript
-boolean ctx.isPointInPath(x, y);
-boolean ctx.isPointInPath(x, y, fillRule);
-
-boolean ctx.isPointInPath(path, x, y);
-boolean ctx.isPointInPath(path, x, y, fillRule);
+ctx.fillText(text, x, y, maxWidth);          //maxWidth可有可无
+ctx.strokeText(text, x, y, maxWidth);
+ctx.font = "10px sans-serif";
+ctx.textAlign = start;     //可选值start, end, left, right or center
+ctx.textBaseLine = alphabetic;       //可选值:top, hanging, middle, alphabetic, ideographic, bottom
+ctx.direction = inherit    //可选值ltr, rtl, inherit
+ctx.measureText(text)        //测量文本的宽度
 ```
 
-> isPointInPath方法返回一个Boolean值，当检测点包含在当前或指定的路径内，返回 true；否则返回 false。
+> **注意**
+>
+> 1像素的线宽未必线宽为1，因此在绘制1像素的线时注意不要绘制在两个像素的交界处
+>
+> ![](https://i.loli.net/2018/09/18/5ba0fab46b0f0.png)
 
-具体方法的使用请参考[MDN](https://developer.mozilla.org/zh-CN/docs/Web/API/CanvasRenderingContext2D/isPointInPath)
 
-我们首先获取到鼠标点击canvas的坐标点：
+博客地址:https://lspcoder.github.io/
 
-```javascript
-/**
-     * @param  {} canvas
-     * @param  {} x
-     * @param  {} y
-     * @description 将鼠标位置定位到canvas坐标
-     */
-    function WindowToCanvas(canvas, x, y) {
-        var box = canvas.getBoundingClientRect();
-        return {
-            x: x - box.left * (canvas.width / box.width),
-            y: y - box.top * (canvas.height / box.height)
-        };
-    }
-```
 
-获取到鼠标位置后换算成canvas的相对位置，然后我们给rect类添加一个新方法判断点是否在当前路径内，
 
-```javascript
-/**
-         * @param  {Object} p {x: num, y: num}
-         * @description 判断点是否在这个路径上, 构造路径利用isPointInPath判断点是否在此路径上不用绘制到canvas上
-         */
-        isPointInPath: function (p) {
-            var isIn = false;
-            ctx.save();
-            ctx.beginPath();
-            this.createPath();
-            if (ctx.isPointInPath(p.x, p.y)) {
-                isIn = true;
-            }
-            ctx.closePath();
-            ctx.restore();
-            return isIn;
-        }
-```
-
-这就是为什么一开始我们没有使用fillRect方法绘制矩形，因为fillRect方法会绘制到画布上，然而我们只是需要构造路径，来使用canvas的isPointInPath方法，而不是要绘制到画布上，因此这里我们巧妙的通过moveTo和lineTo构造路径，然后判断当前点是否在这个小方块内，还记得我们在实例化小方块的时候我们把所有小方块都存到一个datas的数组里吗？我们通过遍历datas数组并且判断点是否在方块内，这样我们就能实现获取点击的具体的某一个小方块了，
-
-```javascript
-canvas.addEventListener('mousemove', function (e) {
-        var pos = WindowToCanvas(canvas, e.clientX, e.clientY);
-        for (var i = 0; i < datas.length; i++) {
-            var rect = datas[i];
-            if (rect.isPointInPath(pos) && rect.isSpecial) {
-                isOn = true;
-                break;
-            } else {
-                isOn = false;
-            }
-        }
-    }, false);
-
-    canvas.addEventListener('click', function (e) {
-        if (!START) return;
-        if (isOn) {
-            drawGame();
-            score++;
-            scoreDom.innerText = score;
-        }
-    })
-```
-
-然后我们就能实现下一关的操作，重新再绘制游戏网格，重新生成新的颜色和位置了。
-
-#### 总结
-
-通过这个小游戏，可以学习到，canvas点击事件的监听和实现，因为canvas只是一张画布是一个状态机，没法通过dom一样直接操作，但是通过一些“奇淫巧技”我们还是能达到我们的目的。后续我还会继续不定期更新一些canvas的文章，欢迎大家一起探讨和学习。
-
-项目地址：https://github.com/lspCoder/canvas-study/tree/master/Game
-
-还看得过去的希望各位看官给个star。
