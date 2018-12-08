@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>css文字发光效果</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            background: #000;
+        }
+
+        .container {
+            width: 600px;
+            margin: 100px auto 0;
+        }
+
+        p {
+            font-family: 'Audiowide';
+            text-align: center;
+            color: #00a67c;
+            font-size: 7em;
+            -webkit-transition: all 1.5s ease;
+            transition: all 1.5s ease;
+        }
+
+        p:hover {
+            color: #fff;
+            -webkit-animation: Glow 1.5s ease infinite alternate;
+            animation: Glow 1.5s ease infinite alternate;
+        }
+
+        @-webkit-keyframes Glow {
+            from {
+                text-shadow: 0 0 10px #fff,
+                    0 0 20px #fff,
+                    0 0 30px #fff,
+                    0 0 40px #00a67c,
+                    0 0 70px #00a67c,
+                    0 0 80px #00a67c,
+                    0 0 100px #00a67c,
+                    0 0 150px #00a67c;
+            }
+
+            to {
+                text-shadow: 0 0 5px #fff,
+                    0 0 10px #fff,
+                    0 0 15px #fff,
+                    0 0 20px #00a67c,
+                    0 0 35px #00a67c,
+                    0 0 40px #00a67c,
+                    0 0 50px #00a67c,
+                    0 0 75px #00a67c;
+            }
+        }
+
+        @keyframes Glow {
+            from {
+                text-shadow: 0 0 10px #fff,
+                    0 0 20px #fff,
+                    0 0 30px #fff,
+                    0 0 40px #00a67c,
+                    0 0 70px #00a67c,
+                    0 0 80px #00a67c,
+                    0 0 100px #00a67c,
+                    0 0 150px #00a67c;
+            }
+
+            to {
+                text-shadow: 0 0 5px #fff,
+                    0 0 10px #fff,
+                    0 0 15px #fff,
+                    0 0 20px #00a67c,
+                    0 0 35px #00a67c,
+                    0 0 40px #00a67c,
+                    0 0 50px #00a67c,
+                    0 0 75px #00a67c;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <p>Glow</p>
+    </div>
+</body>
+
+</html>

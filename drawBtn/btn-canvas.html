@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>canvas绘制按钮</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="Button.js"></script>
+</head>
+
+<body>
+    <canvas id="canvas" width=500 height="600">您的浏览器不支持canvas，建议使用最新版的Chrome！</canvas>
+    <script>
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+
+        var box = [];
+
+        ['blue', 'green', 'red', 'purple', 'orange', 'yellow'].forEach(function (style, i) {
+            var btn = new Button({
+                x: 30,
+                y: 20 + 90 * i,
+                radius: 10,
+                style: style
+            }, ctx);
+            btn.drawBtn();
+            box.push(btn);
+        })
+
+        canvas.addEventListener('mousedown', function (e) {
+            var p = WindowToCanvas(canvas, e.clientX, e.clientY);
+            for (var i = 0; i < box.length; i++) {
+                var btn = box[i];
+                if (btn.isPointInPath(p)) {
+                    btn.setState('active');
+                }
+            }
+        }, false);
+
+        canvas.addEventListener('mousemove', function (e) {
+            var p = WindowToCanvas(canvas, e.clientX, e.clientY);
+            for (var i = 0; i < box.length; i++) {
+                var btn = box[i];
+                if (btn.isPointInPath(p)) {
+                    btn.setState('hover');
+                } else {
+                    btn.setState();
+                }
+            }
+        }, false);
+
+        canvas.addEventListener('mouseup', function (e) {
+            var p = WindowToCanvas(canvas, e.clientX, e.clientY);
+            for (var i = 0; i < box.length; i++) {
+                var btn = box[i];
+                if (btn.isPointInPath(p)) {
+                    btn.setState('hover');
+                }
+            }
+        }, false);
+
+        /**
+         * @param {} canvas
+         * @param {} x
+         * @param {} y
+         * @description 将鼠标位置定位到canvas坐标
+         */
+        function WindowToCanvas(canvas, x, y) {
+            var box = canvas.getBoundingClientRect();
+            return {
+                x: x - box.left * (canvas.width / box.width),
+                y: y - box.top * (canvas.height / box.height)
+            };
+        }
+    </script>
+</body>
+
+</html>

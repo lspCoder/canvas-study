@@ -12,6 +12,11 @@
 	Pixel.prototype = {
 		constructor: Pixel,
 
+		setColor: function (color) {
+			this.fillStyle = color;
+			this.filled = true;
+		},
+
 		getPoints: function() {
 			var p1 = {x: this.x - this.size / 2, y: this.y - this.size / 2};
 			var p2 = {x: this.x + this.size / 2, y: this.y - this.size / 2};

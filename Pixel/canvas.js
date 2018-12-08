@@ -11,6 +11,7 @@ var stepY = 10;
 
 var penHeight = 5; //路径的粗细
 var penColor = '#000000';
+var fillModule = false;
 
 
 /**
@@ -27,23 +28,27 @@ function WindowToCanvas(canvas, x, y) {
 	};
 }
 
-
-for (var i = stepX + .5; i < canvas.width; i += stepX) {
-	for (var j = stepY + .5; j < canvas.height; j += stepY) {
-		var pixel = new Pixel({
-			x: i,
-			y: j,
-			shape: 'rect',
-			isFill: true,
-			fillStyle: '#eee'
-		})
-		box.push(pixel);
-		pixel.draw(ctx);
+function createPixel() {
+	for (var i = stepX + .5; i < canvas.width; i += stepX) {
+		for (var j = stepY + .5; j < canvas.height; j += stepY) {
+			var pixel = new Pixel({
+				x: i,
+				y: j,
+				shape: 'rect',
+				isFill: true,
+				fillStyle: '#eee'
+			})
+			box.push(pixel);
+			pixel.draw(ctx);
+		}
 	}
 }
 
+createPixel();
+
+
 // var img = new Image();
-// img.src = "./img/demo.jpg";
+// img.src = "./img/IMG_2110.JPG";
 
 // if (img.complete) {
 // 	drawImage();
@@ -53,34 +58,33 @@ for (var i = stepX + .5; i < canvas.width; i += stepX) {
 // 	}
 // }
 
-function drawImage() {
-	var imgW = img.width,
-		imgH = img.height,
-		sx = canvas.width / 2 - imgW / 2,
-		sy = canvas.height / 2 - imgH / 2;
+// function drawImage() {
+// 	var imgW = img.width,
+// 		imgH = img.height,
+// 		sx = canvas.width / 2 - imgW / 2,
+// 		sy = canvas.height / 2 - imgH / 2;
 
-	ctx.drawImage(img, sx, sy);
-	var imgData = ctx.getImageData(sx, sy, imgW, imgH);
-	console.log(imgData);
+// 	ctx.drawImage(img, sx, sy);
+// 	var imgData = ctx.getImageData(sx, sy, imgW, imgH);
+// 	console.log(imgData);
 
-	for (var x = 0; x < imgData.width; x += 10) {
-		for (var y = 0; y < imgData.height; y += 10) {
-			var i = (y * imgData.width + x) * 4;
-			if (imgData.data[i + 3] > 128 && imgData.data[i] < 100) {
-				var pixel = new Pixel({
-					x: x,
-					y: y,
-					shape: 'rect',
-					isFill: true,
-					fillStyle: '#000'
-				})
-				box.push(pixel);
-				// pixel.draw(ctx);
-			}
-		}
-	}
-	refresh();
-}
+// 	for (var x = 0; x < imgData.width; x += 10) {
+// 		for (var y = 0; y < imgData.height; y += 10) {
+// 			var i = (y * imgData.width + x) * 4;
+// 			if (imgData.data[i + 3] > 138) {
+// 				var pixel = new Pixel({
+// 					x: x - 100,
+// 					y: y - 300,
+// 					shape: 'circle',
+// 					isFill: true,
+// 					fillStyle: 'rgb(' + imgData.data[i] +','+ imgData.data[i + 1] +','+ imgData.data[i + 2]+')'
+// 				})
+// 				box.push(pixel);
+// 			}
+// 		}
+// 	}
+// 	refresh();
+// }
 
 
 function refresh() {
@@ -97,15 +101,19 @@ var p1, p2;
 var mouseMovePoints = [];
 
 canvas.addEventListener('mousedown', function (e) {
-	mousedown = true;
 	p1 = WindowToCanvas(canvas, e.clientX, e.clientY);
-	for (var p = 0; p < box.length; p++) {
-		var pixel = box[p];
-		if (pixel.isPointInPath(ctx, p1)) {
-			pixel.fillStyle = penColor;
+	if (!fillModule) {
+		mousedown = true;
+		for (var p = 0; p < box.length; p++) {
+			var pixel = box[p];
+			if (pixel.isPointInPath(ctx, p1)) {
+				pixel.fillStyle = penColor;
+			}
 		}
+		refresh();
+	} else {
+		floodFill4();
 	}
-	refresh();
 }, false);
 
 
@@ -139,7 +147,7 @@ function drawColorToPixel(p1, p2, color) {
 		var distance = distToSegment(p, p1, p2, penHeight);
 		if (distance <= penHeight) {
 			var pixel = box[index];
-			pixel.fillStyle = color;
+			pixel.setColor(penColor);
 		}
 	});
 	refresh();
@@ -184,10 +192,21 @@ function distToSegment(p, v, w, offset) {
 	return Math.sqrt(distToSegmentSquared(p, v, w));
 }
 
+function floodFill4() {
+	for (var i = 0; i < box.length; i++) {
+		var pixel = box[i];
+		if (!pixel.filled) {
+			pixel.setColor(fillColor);
+		}
+	}
+	refresh();
+}
+
 canvas.style.cursor = 'url(img/pen.ico),auto';
 
 var penHeightBtn = document.getElementById('penHeight');
 var penColorBtn = document.getElementById('penColor');
+var fillColorBtn = document.getElementById('fillColor');
 var eraserBtn = document.getElementById('eraser');
 
 //添加按钮事件
@@ -204,6 +223,7 @@ penHeightBtn.addEventListener('click', function (e) {
 }, false);
 
 penColorBtn.addEventListener('change', function (e) {
+	fillModule = false;
 	penColor = this.value;
 }, false);
 
@@ -211,6 +231,12 @@ eraserBtn.addEventListener('click', function (e) {
 	canvas.style.cursor = 'url(img/eraser.ico),auto';
 	penColor = '#eee';
 	penHeight = Number(this.value);
+}, false);
+
+fillColorBtn.addEventListener('change', function (e) {
+	canvas.style.cursor = 'url(img/paint.ico),auto';
+	fillColor = fillColorBtn.value;
+	fillModule = true;
 }, false);
 
 // }())
