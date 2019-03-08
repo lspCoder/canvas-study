@@ -3,6 +3,7 @@
 .panel {
     margin: 0 auto;
     text-align: center;
+    height: 600px;
 }
 
 .desc {
