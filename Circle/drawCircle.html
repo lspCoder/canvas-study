@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style type="text/css">
+    #myCanvas{
+        margin: 0 auto;
+        display: block;
+    }
+    </style>
+</head>
+<body>
+  <canvas id="myCanvas">当前浏览器不支持canvas组件请升级！</canvas>
+
+  <script type="text/javascript">
+  //方法二：rotate() 动态画圆
+  var c = document.getElementById('myCanvas');
+  var ctx = c.getContext('2d');
+
+  var mW = c.width = 300;
+  var mH = c.height = 300;
+  var lineWidth = 5;
+  var r = mW / 2; //中间位置
+  var cR = r - 4 * lineWidth; //圆半径
+  var startAngle = -(1 / 2 * Math.PI); //开始角度
+  var endAngle = startAngle + 2 * Math.PI; //结束角度
+  var xAngle = 1 * (Math.PI / 180); //偏移角度量
+  var fontSize = 35; //字号大小
+  var tmpAngle = startAngle; //临时角度变量
+
+  //渲染函数
+  var rander = function(){
+    if(tmpAngle >= endAngle){
+      return;
+    }else if(tmpAngle + xAngle > endAngle){
+      tmpAngle = endAngle;
+    }else{
+      tmpAngle += xAngle;
+    }
+    ctx.clearRect(0, 0, mW, mH);
+
+    //画圈
+    ctx.save();
+    ctx.beginPath();
+    ctx.lineWidth = lineWidth;
+    ctx.strokeStyle = '#1c86d1';
+    ctx.translate(r, r); //重定义圆点
+    ctx.rotate(-Math.PI); //最上方为起点
+    for(var i = 0; i <= tmpAngle - startAngle; i += xAngle){ //绘图
+      ctx.moveTo(0, cR - lineWidth);
+      ctx.lineTo(0, cR);
+      ctx.rotate(xAngle); //通过旋转角度和画点的方式绘制圆
+    }
+    ctx.stroke();
+    ctx.closePath();
+    ctx.restore();
+
+    //写字
+    ctx.fillStyle = '#1d89d5';
+    ctx.font= fontSize + 'px Microsoft Yahei';
+    ctx.textAlign='center';
+    ctx.fillText( Math.round((tmpAngle -  startAngle) / (endAngle - startAngle) * 100) + '%', r, r + fontSize / 2);
+
+    requestAnimationFrame(rander);
+  };
+
+  rander();
+  </script>
+</body>
+</html>

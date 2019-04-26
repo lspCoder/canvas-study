@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>canvas圆锥渐变</title>
+    <style>
+        #myCanvas {
+            margin: 0 auto;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="myCanvas">当前浏览器不支持canvas组件请升级！</canvas>
+    <script src="./js/color.js"></script>
+    <script>
+        let color_list = new gradientColor("#706caa", "#f2f2b0", 180); //颜色值分为180等份
+
+        function toHighDPI(canvas) {
+            const ctx = canvas.getContext('2d');
+            const {
+                width,
+                height
+            } = canvas;
+            const {
+                devicePixelRatio = 1
+            } = window;
+            canvas.width = width * devicePixelRatio;
+            canvas.height = height * devicePixelRatio;
+            canvas.style.width = `${width}px`;
+            canvas.style.height = `${height}px`;
+            ctx.scale(devicePixelRatio, devicePixelRatio);
+        }
+
+        var c = document.getElementById('myCanvas');
+        var ctx = c.getContext('2d');
+        var mW = c.width = 300;
+        var mH = c.height = 300;
+        toHighDPI(c);
+        var lineWidth = 5;
+        var r = mW / 2; //中间位置
+        var cR = r - 4 * lineWidth; //圆半径
+        var startAngle = -(1 / 2 * Math.PI); //开始角度
+        var endAngle = startAngle + 2 * Math.PI; //结束角度
+        var xAngle = 2 * (Math.PI / 180); //偏移角度量
+        var cArr = []; //圆坐标数组
+        var center = {
+            x: mW / 2,
+            y: mH / 2
+        }; //园的中心点坐标
+
+        //初始化圆坐标数组
+        for (var i = startAngle; i <= endAngle; i += xAngle) { //通过sin()和cos()获取每个角度对应的坐标 
+            var x=r + cR * Math.cos(i); 
+            var y = r + cR * Math.sin(i);
+            cArr.push([x, y]);
+        } 
+        //移动到开始点 
+        var startPoint=cArr.shift(); 
+        // ctx.beginPath(); 
+        //ctx.moveTo(startPoint[0], startPoint[1]); 
+        //渲染函数 
+        var i=0; //计数 
+        var render = function () { //画圈 
+            if (cArr.length) {
+                ctx.save();
+                ctx.beginPath();
+                ctx.lineWidth = lineWidth; 
+                // ctx.strokeStyle='#1c86d1' ;
+                ctx.strokeStyle = color_list[i];
+                ctx.moveTo(center.x, center.y);
+                var tmpPoint = cArr.shift();
+                ctx.lineTo(tmpPoint[0], tmpPoint[1]);
+                ctx.stroke();
+                ctx.closePath();
+                ctx.restore();
+                i++;
+            } else {
+                cArr = null;
+                return;
+            }
+            requestAnimationFrame(render);
+        };
+        render();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,70 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>绘制文字</title>
+</head>
+
+<body>
+    <canvas id="canvas" width="500px" height="500px">
+        浏览器不支持canvas
+    </canvas>
+
+    <script>
+        class Text {
+
+            constructor(text, location, isFill) {
+                this._value = text || 'Text';
+                this._location = location;
+                this._isFill = isFill;
+            }
+
+            setStyle(ctx, key, value) {
+                if (ctx[key] === undefined) throw ('unknow property');
+                ctx[key] = value;
+                return this;
+            }
+
+            render(ctx) {
+                ctx.save();
+                ctx.font = "50px serif";
+                if (this._isFill) {
+                    ctx.fillText(this._value, this._location.x, this._location.y);
+                } else {
+                    ctx.strokeText(this._value, this._location.x, this._location.y);
+                }
+                ctx.restore();
+            }
+
+        }
+
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+
+        var text1 = new Text('我是空心文字', {
+            x: 100,
+            y: 100
+        });
+        text1.render(ctx);
+
+        var text2 = new Text('我是填充文字', {
+            x: 100,
+            y: 200
+        }, true);
+        text2.setStyle(ctx, 'fillStyle', 'green');
+        text2.render(ctx);
+
+        var text3 = new Text('我是立体文字', {
+            x: 100,
+            y: 300
+        }, true);
+        text3.setStyle(ctx, 'shadowColor', '#000')
+            .setStyle(ctx, 'shadowBlur', 5)
+            .setStyle(ctx, 'shadowOffsetX', 3)
+            .setStyle(ctx, 'shadowOffsetY', 3);
+        text3.render(ctx);
+
+    </script>
+</body>
+
+</html>

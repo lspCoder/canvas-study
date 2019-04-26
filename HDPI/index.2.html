@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>High DPI Canvas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+    <canvas id="canvas1" ></canvas>
+    <canvas id="canvas2" ></canvas>
+    <script>
+        function backingScale(context) {
+            if ('devicePixelRatio' in window) {
+                if (window.devicePixelRatio > 1) {
+                    return window.devicePixelRatio;
+                }
+            }
+            return 1;
+        }
+
+        var can = document.getElementById("canvas1");
+        var ctx1 = can.getContext("2d");
+        var scaleFactor = backingScale(ctx1);
+
+        if (scaleFactor > 1) {
+            can.width = can.width * scaleFactor;
+            can.height = can.height * scaleFactor;
+            // update the context for the new canvas scale
+            var ctx1 = can.getContext("2d");
+        }
+
+
+        var canvas2 = document.querySelector('#canvas2');
+        var ctx2 = canvas2.getContext('2d');
+
+        ctx1.save();
+        ctx1.beginPath();
+        ctx1.moveTo(0, 0);
+        ctx1.lineTo(300, 150);
+        ctx1.stroke();
+        ctx1.restore();
+
+        ctx2.beginPath();
+        ctx2.moveTo(0, 0);
+        ctx2.lineTo(300, 150);
+        ctx2.stroke();
+
+
+        DrawGrid(ctx1, '#000000', 10, 10);
+        DrawGrid(ctx2, '#000000', 10, 10);
+
+
+        function DrawGrid(ctx, color, stepx, stepy) {
+            ctx.save();
+            ctx.lineWidth = 0.5;
+            ctx.strokeStyle = color;
+
+            for (var i = stepx + 0.5; i < ctx.canvas.width; i += stepx) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, ctx.canvas.height);
+                ctx.stroke();
+            }
+
+            for (var i = stepy + 0.5; i < ctx.canvas.height; i += stepy) {
+                ctx.beginPath();
+                ctx.moveTo(0, i);
+                ctx.lineTo(ctx.canvas.width, i);
+                ctx.stroke();
+            }
+            ctx.restore();
+        }
+    </script>
+</body>
+
+</html>

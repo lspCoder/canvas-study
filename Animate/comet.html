@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>彗星效果</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<canvas id="canvas"></canvas>
+
+<body>
+    <script>
+        function Ball(radius, color) {
+            this.x = 0;
+            this.y = 0;
+            this.radius = radius || 40;
+            this.rotation = 0;
+            this.scaleX = 1;
+            this.scaleY = 1;
+            this.color = color || '#ff0000';
+            this.strokeColor = '#000';
+            this.lineWidth = 1;
+            this.shadowBlur = 0;
+            this.shadowColor = '#ffffff';
+            //ball animation params
+            this.vx = 0; //x轴上的速度
+            this.vy = 0; //y轴上的速度
+        }
+
+        Ball.prototype.draw = function (context) {
+            context.save();
+            context.translate(this.x, this.y);
+            context.rotate(this.rotation);
+            context.scale(this.scaleX, this.scaleY);
+            context.fillStyle = this.color;
+            context.strokeStyle = this.strokeColor;
+            context.lineWidth = this.lineWidth;
+            context.shadowBlur = this.shadowBlur;
+            context.shadowColor = this.shadowColor;
+            context.beginPath();
+            context.arc(0, 0, this.radius, 0, Math.PI * 2, true);
+            context.fill();
+            if (this.lineWidth > 0) {
+                context.stroke();
+            }
+            context.restore();
+        };
+
+
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d');
+        var width = canvas.width;
+        var height = canvas.height;
+        var angleX = 0;
+        var angleY = 0;
+        var range = 50;
+        var centerX = width / 2;
+        var centerY = height / 2;
+        var xSpeed = 0.01;
+        var ySpeed = 0.08;
+
+        // Ball对象的实现见文章末尾
+        var ball = new Ball(10);
+        ball.strokeColor = 'rgba(0,0,0,0)';
+
+
+        (function drawFrame() {
+            window.requestAnimationFrame(drawFrame);
+
+            context.save();
+            context.fillStyle = "rgba(0, 0, 0, 0.8)";
+            context.globalCompositeOperation = 'lighter';
+            context.fillRect(0, 0, width, height);
+            context.restore();
+
+
+            // 重点！使用半透明的白色背景填充画布，从而实现想要的拖尾效果
+            context.fillStyle = 'rgba(255, 255, 255, 0.4)';
+            context.fillRect(0, 0, width, height);
+
+            ball.x = centerX + Math.sin(angleX) * range;
+            ball.y = centerY + Math.sin(angleY) * range;
+            angleX += xSpeed;
+            angleY += ySpeed;
+            ball.draw(context);
+        })();
+    </script>
+</body>
+
+</html>

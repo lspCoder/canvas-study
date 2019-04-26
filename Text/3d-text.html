@@ -1,0 +1,57 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>绘制立体文字</title>
+    <style>
+        body {
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas" width="500px" height="500px">
+        浏览器不支持canvas
+    </canvas>
+    <script>
+        class CircleText {
+            
+            constructor (text, location) {
+                this._value = text || 'Text';
+                this._location = location;
+            }
+
+            setStyle (ctx, key, value) {
+                if (ctx[key] === undefined) throw('unknow property');
+                ctx[key] = value;
+                this.render(ctx);
+            }
+
+            render (ctx) {
+                ctx.save();
+                ctx.font = "50px serif";
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.shadowColor = '#000';
+                ctx.shadowBlur = 3;
+                ctx.shadowOffsetX = 5;
+                ctx.shadowOffsetY = 5;
+                ctx.fillText(this._value, this._location.x, this._location.y);
+                ctx.restore();
+            }
+
+        }
+
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        var text1 = new CircleText('hello Text!!!', {x: window.innerWidth / 2, y: window.innerHeight / 2});
+        text1.render(ctx);
+
+    </script>
+</body>
+
+</html>

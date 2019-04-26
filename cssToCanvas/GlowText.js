@@ -26,25 +26,24 @@
         },
 
         fromGlow: function () {
-            this.drawText(0, 0, 10, '#FFF');
-            this.drawText(0, 0, 20, '#FFF');
-            this.drawText(0, 0, 30, '#FFF');
-            this.drawText(0, 0, 40, '#00a67c');
-            this.drawText(0, 0, 70, '#00a67c');
-            this.drawText(0, 0, 80, '#00a67c');
-            this.drawText(0, 0, 100, '#00a67c');
-            this.drawText(0, 0, 150, '#00a67c');
-        },
-
-        toGlow: function () {
             this.drawText(0, 0, 5, '#FFF');
             this.drawText(0, 0, 10, '#FFF');
             this.drawText(0, 0, 15, '#FFF');
-            this.drawText(0, 0, 20, '#00a67c');
-            this.drawText(0, 0, 35, '#00a67c');
-            this.drawText(0, 0, 40, '#00a67c');
-            this.drawText(0, 0, 50, '#00a67c');
-            this.drawText(0, 0, 75, '#00a67c');
+            this.drawText(0, 0, 20, '#E91E63');
+            this.drawText(0, 0, 35, '#E91E63');
+            this.drawText(0, 0, 50, '#E91E63');
+            this.drawText(0, 0, 75, '#E91E63;');
+        },
+
+        toGlow: function () {
+            this.drawText(0, 0, 10, '#FFF');
+            this.drawText(0, 0, 20, '#FFF');
+            this.drawText(0, 0, 30, '#FFF');
+            this.drawText(0, 0, 40, '#E91E63');
+            this.drawText(0, 0, 70, '#E91E63');
+            this.drawText(0, 0, 80, '#E91E63');
+            this.drawText(0, 0, 100, '#E91E63');
+            this.drawText(0, 0, 150, '#E91E63');
         },
 
         drawText: function (shadowx, shadowy, blur, shadowColor) {

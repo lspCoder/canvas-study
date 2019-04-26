@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>High DPI Canvas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="./hidpi-canvas.js"></script>
+</head>
+
+<body>
+    <canvas id="canvas1"></canvas>
+    <canvas id="canvas2"></canvas>
+    <script>
+        var can = document.getElementById("canvas1");
+        var ctx1 = can.getContext("2d");
+
+        var canvas2 = document.querySelector('#canvas2');
+        var ctx2 = canvas2.getContext('2d');
+
+        ctx1.beginPath();
+        ctx1.font = '20px arial';
+        ctx1.fillText('Html5 canvas', 50, 50);
+
+
+
+        ctx2.beginPath();
+        ctx2.font = '20px arial';
+        ctx2.fillText('Html5 canvas', 50, 50);
+
+
+        DrawGrid(ctx1, '#000000', 10, 10);
+        DrawGrid(ctx2, '#000000', 10, 10);
+
+
+        function DrawGrid(ctx, color, stepx, stepy) {
+            ctx.save();
+            ctx.lineWidth = 0.5;
+            ctx.strokeStyle = color;
+
+            for (var i = stepx + 0.5; i < ctx.canvas.width; i += stepx) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, ctx.canvas.height);
+                ctx.stroke();
+            }
+
+            for (var i = stepy + 0.5; i < ctx.canvas.height; i += stepy) {
+                ctx.beginPath();
+                ctx.moveTo(0, i);
+                ctx.lineTo(ctx.canvas.width, i);
+                ctx.stroke();
+            }
+            ctx.restore();
+        }
+    </script>
+</body>
+
+</html>

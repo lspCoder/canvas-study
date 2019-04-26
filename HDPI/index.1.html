@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>High DPI Canvas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+    <canvas id="canvas1" width="300" height="150"></canvas>
+    <canvas id="canvas2" ></canvas>
+    <script>
+        function setupCanvas(canvas) {
+            // Get the device pixel ratio, falling back to 1.
+            var dpr = window.devicePixelRatio || 1;
+            // Get the size of the canvas in CSS pixels.
+            var rect = canvas.getBoundingClientRect();
+            // Give the canvas pixel dimensions of their CSS
+            // size * the device pixel ratio.
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            var ctx = canvas.getContext('2d');
+            // Scale all drawing operations by the dpr, so you
+            // don't have to worry about the difference.
+            ctx.scale(dpr, dpr);
+            return ctx;
+        }
+
+        // Now this line will be the same size on the page
+        // but will look sharper on high-DPI devices!
+        var ctx1 = setupCanvas(document.querySelector('#canvas1'));
+        // var canvas1 = document.querySelector('#canvas1');
+        // var ctx1 = canvas1.getContext('2d');
+        var canvas2 = document.querySelector('#canvas2');
+        var ctx2 = canvas2.getContext('2d');
+
+        // ctx1.beginPath();
+        // ctx1.moveTo(0, 0);
+        // ctx1.lineTo(300, 150);
+        // ctx1.stroke();
+
+        ctx1.beginPath();
+        ctx1.font = '20px arial';
+        ctx1.fillText('Html5 canvas', 50, 50);
+
+
+        console.log(ctx2.isPointInPath(60, 130));
+
+        ctx2.beginPath();
+        ctx2.font = '20px arial';
+        ctx2.fillText('Html5 canvas', 50, 50);
+
+        // ctx2.beginPath();
+        // ctx2.moveTo(0, 0);
+        // ctx2.lineTo(300, 150);
+        // ctx2.stroke();
+
+
+        // DrawGrid(ctx1, '#000000', 10, 10);
+        // DrawGrid(ctx2, '#000000', 10, 10);
+
+
+        function DrawGrid(ctx, color, stepx, stepy) {
+            ctx.save();
+            ctx.lineWidth = 0.5;
+            ctx.strokeStyle = color;
+
+            for (var i = stepx + 0.5; i < ctx.canvas.width; i += stepx) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, ctx.canvas.height);
+                ctx.stroke();
+            }
+
+            for (var i = stepy + 0.5; i < ctx.canvas.height; i += stepy) {
+                ctx.beginPath();
+                ctx.moveTo(0, i);
+                ctx.lineTo(ctx.canvas.width, i);
+                ctx.stroke();
+            }
+            ctx.restore();
+        }
+    </script>
+</body>
+
+</html>
